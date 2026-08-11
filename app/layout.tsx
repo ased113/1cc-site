@@ -37,7 +37,7 @@ const fraunces = Fraunces({
 }); import { Plus_Jakarta_Sans } from "next/font/google";
 
 const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin", "cyrillic-ext"],
   weight: ["600", "700", "800"],
   variable: "--font-jakarta",
-}); 
+});
