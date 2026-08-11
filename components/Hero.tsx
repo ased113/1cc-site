@@ -72,10 +72,16 @@ export default function Hero() {
 
       const imageRatio = photo.width / photo.height;
       const canvasRatio = canvasWidth / canvasHeight;
+      const isPortrait = canvasRatio < 1;
 
       let drawWidth: number, drawHeight: number, offsetX: number, offsetY: number;
 
-      if (imageRatio > canvasRatio) {
+      if (isPortrait) {
+        drawWidth = canvasWidth;
+        drawHeight = drawWidth / imageRatio;
+        offsetX = 0;
+        offsetY = (canvasHeight - drawHeight) / 2;
+      } else if (imageRatio > canvasRatio) {
         drawHeight = canvasHeight;
         drawWidth = drawHeight * imageRatio;
         offsetX = (canvasWidth - drawWidth) / 2;
@@ -224,7 +230,6 @@ export default function Hero() {
     <>
       <Navbar />
 
-      {/* HERO */}
       <main>
         <section ref={heroRef} className={`hero ${isHovered ? "is-hovered" : ""}`} id="hero">
           <video

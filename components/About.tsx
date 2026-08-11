@@ -214,7 +214,6 @@ export default function About() {
           left: -10%;
           width: 55%;
           height: 2px;
-
           background: linear-gradient(
             90deg,
             transparent 0%,
@@ -223,7 +222,6 @@ export default function About() {
             rgba(163, 230, 53, 0.6) 85%,
             transparent 100%
           );
-
           transform: rotate(-14deg);
           transform-origin: right center;
           filter: blur(0.5px);
@@ -236,17 +234,14 @@ export default function About() {
           top: 50%;
           right: 48px;
           transform: translateY(-50%);
-
           text-align: right;
           pointer-events: none;
-
           font-family: "Courier New", monospace;
           font-size: 10px;
           letter-spacing: 0.12em;
           text-transform: uppercase;
           color: rgba(255, 255, 255, 0.2);
           line-height: 2.1;
-
           opacity: 0.9;
         }
 
@@ -296,7 +291,6 @@ export default function About() {
         .about-label {
           display: block;
           margin-bottom: 12px;
-
           font-size: 13px;
           font-weight: 700;
           letter-spacing: 0.1em;
@@ -306,7 +300,6 @@ export default function About() {
 
         .about-title {
           max-width: 900px;
-
           font-family: var(--font-jakarta), sans-serif;
           font-size: 58px;
           font-weight: 700;
@@ -320,17 +313,14 @@ export default function About() {
 
         .rotating-word {
           display: inline-block;
-
           font-family: inherit;
           font-weight: 800;
           text-transform: uppercase;
           color: #ffffff;
           text-shadow: 0 0 24px rgba(255, 255, 255, 0.35);
-
           opacity: 0;
           filter: blur(8px);
           transform: translateY(4px);
-
           transition: opacity 0.4s ease, filter 0.4s ease, transform 0.4s ease;
         }
 
@@ -343,7 +333,6 @@ export default function About() {
         .about-text {
           margin-top: 24px;
           max-width: 780px;
-
           font-family: var(--font-jakarta), sans-serif;
           font-size: 19px;
           font-weight: 500;
@@ -353,7 +342,6 @@ export default function About() {
 
         .about-grid {
           margin-top: 56px;
-
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 16px;
@@ -362,11 +350,9 @@ export default function About() {
         .about-card {
           position: relative;
           padding: 40px;
-
           background: rgba(23, 23, 23, 0.8);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 16px;
-
           transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
         }
 
@@ -402,7 +388,6 @@ export default function About() {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.2em;
@@ -437,7 +422,6 @@ export default function About() {
 
         .about-card-title {
           margin-top: 20px;
-
           font-family: var(--font-jakarta), sans-serif;
           font-size: 24px;
           font-weight: 700;
@@ -447,7 +431,6 @@ export default function About() {
         .about-card-text {
           margin-top: 12px;
           max-width: 620px;
-
           font-size: 15px;
           line-height: 1.6;
           color: rgba(255, 255, 255, 0.5);
@@ -455,10 +438,8 @@ export default function About() {
 
         .about-stats {
           margin-top: 72px;
-
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           padding-top: 40px;
         }
@@ -484,7 +465,6 @@ export default function About() {
 
         .about-stat-label {
           margin-top: 10px;
-
           font-size: 12px;
           line-height: 1.5;
           letter-spacing: 0.15em;
@@ -495,13 +475,10 @@ export default function About() {
         .about-stat-metric {
           margin-top: 20px;
           padding-top: 16px;
-
           border-top: 1px solid rgba(255, 255, 255, 0.08);
-
           display: inline-flex;
           align-items: center;
           gap: 5px;
-
           font-size: 13px;
           font-weight: 600;
           letter-spacing: 0.02em;
@@ -517,7 +494,6 @@ export default function About() {
           .about-inner {
             max-width: 100%;
           }
-
           .about-title {
             font-size: 48px;
           }
@@ -534,15 +510,22 @@ export default function About() {
           .about-grid {
             grid-template-columns: 1fr;
           }
-
           .about-stat-value {
             font-size: 56px;
           }
         }
 
         @media (max-width: 640px) {
+          .light-streak {
+            display: none;
+          }
+
           .about {
-            padding: 90px 16px;
+            padding: 60px 16px 60px;
+          }
+
+          .about-label {
+            margin-bottom: 8px;
           }
 
           .about-title {
