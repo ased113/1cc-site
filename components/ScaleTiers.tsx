@@ -60,14 +60,11 @@ const GROW_DURATION = 0.8;
 export default function ScaleTiers() {
   return (
     <section id="tiers" className="st">
-
       <div className="st-inner">
 
         <span className="st-label">РІВНІ ОБСЯГУ</span>
 
-        <h2 className="st-title">
-          Ваш місячний обсяг визначає пріоритет
-        </h2>
+        <h2 className="st-title">Ваш місячний обсяг визначає пріоритет</h2>
 
         <p className="st-subtitle">
           Що вищий підтверджений обсяг лідів за місяць, то більший % апруву,
@@ -75,7 +72,6 @@ export default function ScaleTiers() {
           діють персональні умови.
         </p>
 
-        {/* DESKTOP — animated growth bars */}
         <div className="st-bars st-bars-desktop">
           {TIERS.map((tier) => {
             const limeHeight = Math.round(tier.totalHeight * tier.limeRatio);
@@ -83,29 +79,22 @@ export default function ScaleTiers() {
             const contentDelay = tier.delay + GROW_DURATION;
 
             return (
-              <div
-                key={tier.index}
-                className="st-bar-wrap"
-                style={{ height: `${tier.totalHeight}px` }}
-              >
+              <div key={tier.index} className="st-bar-wrap" style={{ height: tier.totalHeight }}>
+
                 <motion.div
                   className="st-bar-bg"
                   initial={{ height: 0 }}
                   whileInView={{ height: tier.totalHeight }}
                   viewport={{ once: false, amount: 0.3 }}
-                  transition={{
-                    duration: GROW_DURATION,
-                    delay: tier.delay,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
+                  transition={{ duration: GROW_DURATION, delay: tier.delay, ease: [0.22, 1, 0.36, 1] }}
                   whileHover={{ boxShadow: "0 0 30px rgba(163,230,53,0.3)" }}
                 >
-                  <div className="st-bar-top-fill" style={{ height: `${limeHeight}px` }} />
-                  <div className="st-bar-bottom-fill" style={{ height: `${darkHeight}px` }} />
+                  <div className="st-bar-top-fill" style={{ height: limeHeight }} />
+                  <div className="st-bar-bottom-fill" style={{ height: darkHeight }} />
                 </motion.div>
 
-                <div className="st-bar-content" style={{ height: `${tier.totalHeight}px` }}>
-                  <div className="st-content-top" style={{ height: `${limeHeight}px` }}>
+                <div className="st-bar-content" style={{ height: tier.totalHeight }}>
+                  <div className="st-content-top" style={{ height: limeHeight }}>
                     <motion.span
                       className="st-index"
                       initial={{ opacity: 0 }}
@@ -126,7 +115,7 @@ export default function ScaleTiers() {
                     </motion.span>
                   </div>
 
-                  <div className="st-content-bottom" style={{ height: `${darkHeight}px` }}>
+                  <div className="st-content-bottom" style={{ height: darkHeight }}>
                     <motion.p
                       className="st-subtitle-text"
                       initial={{ opacity: 0 }}
@@ -138,12 +127,12 @@ export default function ScaleTiers() {
                     </motion.p>
                   </div>
                 </div>
+
               </div>
             );
           })}
         </div>
 
-        {/* MOBILE — simple cards, no height animation */}
         <div className="st-bars-mobile">
           {TIERS.map((tier) => (
             <motion.div
@@ -389,7 +378,6 @@ export default function ScaleTiers() {
           }
         }
       `}</style>
-
     </section>
   );
 }
