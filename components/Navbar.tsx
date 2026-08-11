@@ -1,29 +1,191 @@
 "use client";
 
-export default function Navbar() {
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 flex w-full justify-center px-4">
-      <div className="relative mt-6 flex h-16 w-[88%] max-w-[1500px] items-center rounded-full border border-white/10 bg-black/30 px-8 backdrop-blur-2xl lg:px-10">
+import React, { useState } from "react";
 
-        {/* LOGO */}
-        <div className="flex items-center gap-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-lime-300 shadow-[0_0_22px_rgba(180,255,120,.9)]" />
-          <span className="text-lg font-bold tracking-[0.35em]">1CC</span>
+export default function Navbar() {
+  const [lang, setLang] = useState<"ru" | "ua">("ua");
+
+  return (
+    <header className="nb">
+      <div className="nb-inner">
+
+        <div className="nb-left">
+          <a href="#" className="nb-logo">1CC</a>
         </div>
 
-        {/* LINKS */}
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-12 text-sm text-white/60 lg:flex">
-          <a href="#" className="transition hover:text-white">Про нас</a>
-          <a href="#" className="transition hover:text-white">Кейси</a>
-          <a href="#" className="transition hover:text-white">Контакти</a>
+        <nav className="nb-links">
+          <a href="#about" className="nb-link">Про нас</a>
+          <a href="#pricing" className="nb-link">Тарифи</a>
+          <a href="#tiers" className="nb-link">Рівні обсягу</a>
+          <a href="#contacts" className="nb-link">Контакти</a>
         </nav>
 
-        {/* CTA */}
-        <button className="ml-auto rounded-full border border-white/15 bg-white px-6 py-3 text-sm font-medium text-black transition hover:scale-105">
-          Почати
-        </button>
+        <div className="nb-right">
+
+          <div className="nb-lang">
+            <button
+              className={`nb-lang-btn ${lang === "ru" ? "is-active" : ""}`}
+              onClick={() => setLang("ru")}
+            >
+              RU
+            </button>
+            <button
+              className={`nb-lang-btn ${lang === "ua" ? "is-active" : ""}`}
+              onClick={() => setLang("ua")}
+            >
+              UA
+            </button>
+          </div>
+
+          <a href="#start" className="nb-cta">
+            Залишити заявку
+          </a>
+
+        </div>
 
       </div>
+
+      <style jsx>{`
+        .nb {
+          position: sticky;
+          top: 0;
+          z-index: 50;
+
+          width: 100%;
+
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nb-inner {
+          position: relative;
+
+          max-width: 1400px;
+          margin: 0 auto;
+
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          padding: 20px 24px;
+        }
+
+        .nb-left {
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .nb-logo {
+          font-family: var(--font-jakarta), sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          letter-spacing: -0.04em;
+          color: #ffffff;
+        }
+
+        .nb-links {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+
+          display: flex;
+          align-items: center;
+          gap: 40px;
+        }
+
+        .nb-link {
+          font-size: 16px;
+          font-weight: 500;
+          color: #d4d4d8;
+          transition: color 0.2s ease;
+          white-space: nowrap;
+        }
+
+        .nb-link:hover {
+          color: #ffffff;
+        }
+
+        .nb-right {
+          flex-shrink: 0;
+
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .nb-lang {
+          display: flex;
+          align-items: center;
+
+          padding: 4px;
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: #18181b;
+        }
+
+        .nb-lang-btn {
+          padding: 6px 13px;
+          border-radius: 999px;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+
+          font-size: 13px;
+          font-weight: 500;
+          color: #a1a1aa;
+
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nb-lang-btn.is-active {
+          background: #ffffff;
+          color: #000000;
+          font-weight: 700;
+        }
+
+        .nb-cta {
+          padding: 10px 24px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          background: #18181b;
+
+          font-size: 16px;
+          font-weight: 500;
+          color: #ffffff;
+
+          transition: background 0.2s ease;
+          white-space: nowrap;
+        }
+
+        .nb-cta:hover {
+          background: #27272a;
+        }
+
+        @media (max-width: 1024px) {
+          .nb-links {
+            display: none;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .nb-inner {
+            padding: 16px;
+          }
+
+          .nb-cta {
+            padding: 8px 16px;
+            font-size: 14px;
+          }
+
+          .nb-logo {
+            font-size: 20px;
+          }
+        }
+      `}</style>
     </header>
   );
 }

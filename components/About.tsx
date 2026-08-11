@@ -51,10 +51,10 @@ function StatValue({ target, pad, suffix }: { target: number; pad?: number; suff
 }
 
 const ROTATING_WORDS = [
-  "REVENUE ENGINE",
-  "CLOSING MACHINE",
-  "SALES SYSTEM",
-  "GROWTH ENGINE",
+  "Growth engine",
+  "Closing machine",
+  "Sales system",
+  "Revenue engine",
 ];
 
 function RotatingWord() {
@@ -103,10 +103,7 @@ export default function About() {
 
       <div className="about-inner">
 
-        <span className="about-label">
-          <span className="about-dot" />
-          WHO WE ARE
-        </span>
+        <span className="about-label">WHO WE ARE</span>
 
         <h2 className="about-title">
           <span className="about-title-static">Ми не call-центр.</span>
@@ -204,17 +201,10 @@ export default function About() {
         .about {
           position: relative;
           width: 100%;
-          min-height: 100vh;
-
           background: #000;
           color: #fff;
-
-          display: flex;
-          align-items: center;
-
-          padding: 140px 32px;
+          padding: 100px 24px 80px;
           overflow: hidden;
-
           scroll-margin-top: 110px;
         }
 
@@ -299,68 +289,40 @@ export default function About() {
           position: relative;
           z-index: 1;
           width: 100%;
-          max-width: 980px;
+          max-width: 1220px;
           margin: 0 auto;
         }
 
         .about-label {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
+          display: block;
+          margin-bottom: 12px;
 
-          padding: 8px 20px;
-
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: rgba(255, 255, 255, 0.04);
-          backdrop-filter: blur(20px);
-
-          font-size: 11px;
+          font-size: 13px;
           font-weight: 700;
-          letter-spacing: 0.35em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        .about-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #a3e635;
-          box-shadow: 0 0 10px rgba(163, 230, 53, 0.9);
-          animation: dotPulse 2.2s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-          0%, 100% {
-            opacity: 1;
-            box-shadow: 0 0 10px rgba(163, 230, 53, 0.9);
-          }
-          50% {
-            opacity: 0.5;
-            box-shadow: 0 0 4px rgba(163, 230, 53, 0.4);
-          }
+          color: #a3e635;
         }
 
         .about-title {
-          margin-top: 36px;
+          max-width: 900px;
 
-          font-size: 52px;
-          font-weight: 900;
-          letter-spacing: -0.03em;
-          line-height: 1.08;
-          text-transform: uppercase;
+          font-family: var(--font-jakarta), sans-serif;
+          font-size: 58px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          line-height: 1.12;
         }
 
         .about-title-static {
-          color: rgba(255, 255, 255, 0.85);
+          color: rgba(255, 255, 255, 0.9);
         }
 
         .rotating-word {
           display: inline-block;
 
           font-family: inherit;
-          font-weight: 900;
+          font-weight: 800;
           text-transform: uppercase;
           color: #ffffff;
           text-shadow: 0 0 24px rgba(255, 255, 255, 0.35);
@@ -379,28 +341,29 @@ export default function About() {
         }
 
         .about-text {
-          margin-top: 28px;
-          max-width: 680px;
+          margin-top: 24px;
+          max-width: 780px;
 
-          font-size: 20px;
+          font-family: var(--font-jakarta), sans-serif;
+          font-size: 19px;
           font-weight: 500;
-          line-height: 1.55;
-          color: rgba(255, 255, 255, 0.72);
+          line-height: 1.6;
+          color: #a3a3a3;
         }
 
         .about-grid {
-          margin-top: 72px;
+          margin-top: 56px;
 
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px;
+          gap: 16px;
         }
 
         .about-card {
           position: relative;
-          padding: 32px 28px;
+          padding: 40px;
 
-          background: #060606;
+          background: rgba(23, 23, 23, 0.8);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 16px;
 
@@ -410,7 +373,7 @@ export default function About() {
         .about-card:hover {
           transform: translateY(-2px);
           border-color: rgba(255, 255, 255, 0.28);
-          background: #0b0b0b;
+          background: rgba(30, 30, 30, 0.85);
         }
 
         .about-card-wide {
@@ -424,7 +387,7 @@ export default function About() {
         }
 
         .about-card-num {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
           letter-spacing: 0.2em;
           color: rgba(255, 255, 255, 0.35);
@@ -440,7 +403,7 @@ export default function About() {
           align-items: center;
           gap: 6px;
 
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.2em;
           color: rgba(163, 230, 53, 0.7);
@@ -455,8 +418,13 @@ export default function About() {
           animation: dotPulse 2.2s ease-in-out infinite;
         }
 
+        @keyframes dotPulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(163, 230, 53, 0.9); }
+          50% { opacity: 0.5; box-shadow: 0 0 4px rgba(163, 230, 53, 0.4); }
+        }
+
         .card-line {
-          margin-top: 14px;
+          margin-top: 18px;
           width: 0;
           height: 1px;
           background: rgba(163, 230, 53, 0.5);
@@ -468,34 +436,35 @@ export default function About() {
         }
 
         .about-card-title {
-          margin-top: 16px;
+          margin-top: 20px;
 
-          font-size: 20px;
-          font-weight: 800;
+          font-family: var(--font-jakarta), sans-serif;
+          font-size: 24px;
+          font-weight: 700;
           letter-spacing: -0.01em;
         }
 
         .about-card-text {
-          margin-top: 10px;
-          max-width: 520px;
+          margin-top: 12px;
+          max-width: 620px;
 
-          font-size: 14px;
+          font-size: 15px;
           line-height: 1.6;
-          color: rgba(255, 255, 255, 0.45);
+          color: rgba(255, 255, 255, 0.5);
         }
 
         .about-stats {
-          margin-top: 64px;
+          margin-top: 72px;
 
           display: grid;
           grid-template-columns: repeat(3, 1fr);
 
           border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding-top: 32px;
+          padding-top: 40px;
         }
 
         .about-stat {
-          padding: 0 28px;
+          padding: 0 32px;
         }
 
         .about-stat:not(:first-child) {
@@ -503,17 +472,20 @@ export default function About() {
         }
 
         :global(.about-stat-value) {
-          font-size: 40px;
-          font-weight: 900;
-          letter-spacing: -0.02em;
+          font-family: var(--font-jakarta), sans-serif;
+          font-size: 72px;
+          font-weight: 800;
+          letter-spacing: -0.03em;
           font-variant-numeric: tabular-nums;
           line-height: 1;
+          color: #ffffff;
+          text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
         }
 
         .about-stat-label {
-          margin-top: 6px;
+          margin-top: 10px;
 
-          font-size: 11px;
+          font-size: 12px;
           line-height: 1.5;
           letter-spacing: 0.15em;
           text-transform: uppercase;
@@ -521,8 +493,8 @@ export default function About() {
         }
 
         .about-stat-metric {
-          margin-top: 18px;
-          padding-top: 14px;
+          margin-top: 20px;
+          padding-top: 16px;
 
           border-top: 1px solid rgba(255, 255, 255, 0.08);
 
@@ -530,15 +502,25 @@ export default function About() {
           align-items: center;
           gap: 5px;
 
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
           letter-spacing: 0.02em;
           color: rgba(163, 230, 53, 0.85);
         }
 
         .metric-arrow {
-          font-size: 11px;
+          font-size: 12px;
           line-height: 1;
+        }
+
+        @media (max-width: 1300px) {
+          .about-inner {
+            max-width: 100%;
+          }
+
+          .about-title {
+            font-size: 48px;
+          }
         }
 
         @media (max-width: 1100px) {
@@ -552,15 +534,19 @@ export default function About() {
           .about-grid {
             grid-template-columns: 1fr;
           }
+
+          .about-stat-value {
+            font-size: 56px;
+          }
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 640px) {
           .about {
-            padding: 100px 20px;
+            padding: 90px 16px;
           }
 
           .about-title {
-            font-size: 34px;
+            font-size: 32px;
           }
 
           .about-grid {
@@ -584,6 +570,10 @@ export default function About() {
             border-left: none;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding-top: 24px;
+          }
+
+          .about-stat-value {
+            font-size: 48px;
           }
         }
       `}</style>

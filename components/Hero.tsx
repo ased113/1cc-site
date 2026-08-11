@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Navbar from "./Navbar";
 
 const REVEAL_RADIUS = 88;
 const TRAIL_LIFETIME = 1650;
@@ -221,28 +222,7 @@ export default function Hero() {
 
   return (
     <>
-      {/* HEADER */}
-      <header className="header">
-        <div className="header-inner">
-          <a href="#" className="logo">
-            <span className="logo-dot" />
-            <span>1CC</span>
-          </a>
-
-          <nav className="nav">
-  <a href="#about" className="nav-link">Про нас</a>
-  <a href="#pricing" className="nav-link">Тарифи</a>
-  <a href="#contacts" className="nav-link">Контакти</a>
-</nav>
-
-          <div className="header-action">
-            <a href="#start" className="start-button">
-              Почати роботу
-              <span className="arrow">→</span>
-            </a>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* HERO */}
       <main>
@@ -338,160 +318,12 @@ export default function Hero() {
           opacity: 1;
         }
 
-        .header {
-          position: fixed;
-          top: 22px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: calc(100% - 64px);
-          max-width: 1380px;
-          z-index: 100;
-        }
-
-        .header-inner {
-          height: 72px;
-          padding: 0 12px 0 26px;
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
-          align-items: center;
-          border-radius: 22px;
-          background: rgba(10, 10, 10, 0.43);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 12px 45px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.045);
-          backdrop-filter: blur(22px);
-          -webkit-backdrop-filter: blur(22px);
-        }
-
-        .logo {
-          justify-self: start;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          color: #fff;
-          font-size: 20px;
-          font-weight: 700;
-          letter-spacing: -0.03em;
-        }
-
-        .logo-dot {
-          width: 9px;
-          height: 9px;
-          border-radius: 50%;
-          background: #fff;
-          box-shadow: 0 0 14px rgba(255, 255, 255, 0.55);
-        }
-
-        .nav {
-          justify-self: center;
-          display: flex;
-          align-items: center;
-          gap: 42px;
-        }
-
-        .nav-link {
-          position: relative;
-          color: rgba(255, 255, 255, 0.66);
-          font-size: 14px;
-          font-weight: 500;
-          transition: color 0.25s ease;
-        }
-
-        .nav-link:hover {
-          color: #fff;
-        }
-
-        .nav-link::after {
-          content: "";
-          position: absolute;
-          left: 50%;
-          bottom: -8px;
-          width: 4px;
-          height: 4px;
-          border-radius: 50%;
-          background: #fff;
-          transform: translateX(-50%) scale(0);
-          opacity: 0;
-          transition: 0.25s ease;
-        }
-
-        .nav-link:hover::after {
-          opacity: 1;
-          transform: translateX(-50%) scale(1);
-        }
-
-        .header-action {
-          justify-self: end;
-        }
-
-        .start-button {
-          height: 48px;
-          padding: 0 22px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 11px;
-          border-radius: 15px;
-          background: #fff;
-          color: #080808;
-          font-size: 14px;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-        }
-
-        .start-button:hover {
-          transform: translateY(-2px);
-          background: #f3f3f3;
-          box-shadow: 0 10px 30px rgba(255, 255, 255, 0.12);
-        }
-
-        .arrow {
-          width: 19px;
-          height: 19px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #0b0b0b;
-          color: white;
-          font-size: 11px;
-          transition: transform 0.25s ease;
-        }
-
-        .start-button:hover .arrow {
-          transform: translateX(3px);
-        }
-
         @media (max-width: 760px) {
           .hero {
             cursor: auto;
           }
           .custom-cursor {
             display: none;
-          }
-          .header {
-            top: 14px;
-            width: calc(100% - 28px);
-          }
-          .header-inner {
-            height: 62px;
-            padding: 0 18px;
-            grid-template-columns: 1fr auto;
-            border-radius: 18px;
-          }
-          .nav {
-            display: none;
-          }
-          .header-action {
-            display: block;
-          }
-          .start-button {
-            height: 42px;
-            padding: 0 16px;
-            font-size: 13px;
-          }
-          .logo {
-            font-size: 18px;
           }
         }
       `}</style>
