@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+import SmoothScroll from "@/components/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,32 +14,45 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "1CC",
-  description: "Revenue built on conversations.",
-};  
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-    </html>
-  );
-}
-import { Fraunces } from "next/font/google";
-
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["600", "700"],
   style: ["italic"],
   variable: "--font-fraunces",
-}); import { Plus_Jakarta_Sans } from "next/font/google";
+});
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin", "cyrillic-ext"],
   weight: ["600", "700", "800"],
   variable: "--font-jakarta",
 });
+
+export const metadata: Metadata = {
+  title: "1CC",
+  description: "Revenue built on conversations.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html
+      lang="en"
+      className={`
+        ${geistSans.variable}
+        ${geistMono.variable}
+        ${fraunces.variable}
+        ${jakarta.variable}
+        h-full
+        antialiased
+      `}
+    >
+      <body className="min-h-full flex flex-col">
+        <SmoothScroll />
+        {children}
+      </body>
+    </html>
+  );
+}
