@@ -38,6 +38,53 @@ const FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
+/* word-by-word reveal: splits the answer into words and fades
+   each one in with a small stagger, so the text materializes
+   left-to-right instead of appearing all at once */
+const wordContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.035,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 4 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: "easeOut" as const },
+  },
+};
+
+function WordReveal({ text }: { text: string }) {
+  const words = text.split(" ");
+
+  return (
+    <motion.p
+      className="faq-answer"
+      variants={wordContainerVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+    >
+      {words.map((word, i) => (
+        <motion.span
+          key={`${word}-${i}`}
+          variants={wordVariants}
+          style={{ display: "inline-block", whiteSpace: "pre" }}
+        >
+          {word}
+          {i < words.length - 1 ? " " : ""}
+        </motion.span>
+      ))}
+    </motion.p>
+  );
+}
+
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <motion.svg
@@ -102,12 +149,12 @@ export default function FAQ() {
                   {isOpen && (
                     <motion.div
                       className="faq-answer-wrap"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.32, ease: EASE }}
+                      initial={{ height: 0 }}
+                      animate={{ height: "auto" }}
+                      exit={{ height: 0 }}
+                      transition={{ duration: 0.4, ease: EASE }}
                     >
-                      <p className="faq-answer">{item.answer}</p>
+                      <WordReveal text={item.answer} />
                     </motion.div>
                   )}
                 </AnimatePresence>

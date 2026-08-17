@@ -748,10 +748,17 @@ function Logo3D() {
     <>
       {/* =================================================
           ENVIRONMENT
+
+          Same HDR file the old `preset="studio"` used to
+          fetch from a GitHub raw CDN at runtime (which could
+          429 unpredictably) — except this copy is hosted
+          locally at /public/hdri/, so it loads from your own
+          domain instead of a third-party CDN. Identical visual
+          result, no external dependency.
       ================================================= */}
 
       <Environment
-        preset="studio"
+        files="/hdri/studio_small_03_1k.hdr"
         background={false}
       />
 

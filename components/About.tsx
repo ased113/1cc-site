@@ -14,28 +14,6 @@ import {
 } from "framer-motion";
 
 /* =========================================================
-   ARROW
-========================================================= */
-
-function ArrowIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
-/* =========================================================
    WORD SWAPPER
 ========================================================= */
 
@@ -379,7 +357,7 @@ function StageCard({
                 : ""
             }`}
           >
-            <ArrowIcon />
+            {parseInt(card.num, 10)}
           </span>
         </div>
       </div>
@@ -2889,6 +2867,16 @@ export default function About() {
               255,
               0.58
             );
+
+          font-family:
+            var(--font-jakarta),
+            sans-serif;
+
+          font-size:
+            13px;
+
+          font-weight:
+            700;
 
           box-shadow:
             inset 0 1px 0

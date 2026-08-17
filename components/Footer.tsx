@@ -10,7 +10,7 @@ const JOIN_US = [
   { label: "Telegram", href: "https://t.me/onechancecc" },
   { label: "Support", href: "https://t.me/onechanceg" },
 ];
-const PRODUCT = ["Send Feedback", "Blog", "Terms of use", "Privacy Policy"];
+const PRODUCT = ["Send Feedback", "Terms of use", "Privacy Policy"];
 
 export default function Footer() {
   return (
