@@ -123,6 +123,7 @@ function StageCard({
   progress,
   spread,
   restOffset,
+  isMobileLayout,
 }: {
   card: (typeof CARDS)[number];
   progress: ReturnType<
@@ -130,6 +131,7 @@ function StageCard({
   >;
   spread: number;
   restOffset: number;
+  isMobileLayout: boolean;
 }) {
   /* =======================================================
      SCROLL MOVEMENT — distance is now derived from the
@@ -298,13 +300,21 @@ function StageCard({
         card.isFeatured
           ? "card-featured"
           : ""
+      } ${
+        isMobileLayout
+          ? "stage-card-mobile"
+          : ""
       }`}
-      style={{
-        x: baseX,
-        y: combinedY,
-        scale: hoverScale,
-        zIndex,
-      }}
+      style={
+        isMobileLayout
+          ? { position: "relative" }
+          : {
+              x: baseX,
+              y: combinedY,
+              scale: hoverScale,
+              zIndex,
+            }
+      }
       onHoverStart={
         handleEnter
       }
@@ -547,6 +557,46 @@ function CardsScrollStep() {
   }, [progress]);
 
   /* =======================================================
+     MOBILE STACKED LAYOUT
+
+     Below ~640px three ~300px-wide cards physically cannot
+     spread apart without overlapping (the math simply doesn't
+     fit: 3 × 300px > 400px viewport). Rather than fighting
+     that with ever-smaller offsets, switch to a plain vertical
+     stack — the standard, reliable mobile pattern.
+  ======================================================= */
+
+  const [
+    isMobileLayout,
+    setIsMobileLayout,
+  ] = useState(false);
+
+  useEffect(() => {
+    const mql =
+      window.matchMedia(
+        "(max-width: 640px)"
+      );
+
+    const update = () =>
+      setIsMobileLayout(
+        mql.matches
+      );
+
+    update();
+
+    mql.addEventListener(
+      "change",
+      update
+    );
+
+    return () =>
+      mql.removeEventListener(
+        "change",
+        update
+      );
+  }, []);
+
+  /* =======================================================
      WHEEL HIJACK
   ======================================================= */
 
@@ -617,10 +667,20 @@ function CardsScrollStep() {
 
   return (
     <div
-      className="cards-section"
+      className={`cards-section ${
+        isMobileLayout
+          ? "cards-section-mobile"
+          : ""
+      }`}
       ref={sectionRef}
     >
-      <div className="cards-container">
+      <div
+        className={`cards-container ${
+          isMobileLayout
+            ? "cards-container-mobile"
+            : ""
+        }`}
+      >
         {CARDS.map(
           (card) => (
             <StageCard
@@ -635,6 +695,9 @@ function CardsScrollStep() {
               }
               spread={spread}
               restOffset={restOffset}
+              isMobileLayout={
+                isMobileLayout
+              }
             />
           )
         )}
@@ -3197,6 +3260,39 @@ export default function About() {
             font-size:
               34px;
           }
+        }
+
+        /* ===================================================
+           MOBILE STACKED CARD LAYOUT
+           Driven by JS (isMobileLayout), matching the 640px
+           breakpoint above. Three ~300px-wide cards cannot
+           spread apart on a ~360-400px screen without
+           overlapping — no offset math fixes that, so below
+           this width the cards render in normal document flow
+           as a simple vertical stack instead of the desktop
+           scroll-driven spread.
+        =================================================== */
+
+        :global(.cards-section-mobile) {
+          height: auto !important;
+          padding: 24px 0;
+        }
+
+        :global(.cards-container-mobile) {
+          flex-direction: column !important;
+          align-items: center;
+          height: auto !important;
+          gap: 20px;
+        }
+
+        :global(.stage-card-mobile) {
+          position: relative !important;
+          left: auto !important;
+          right: auto !important;
+          top: auto !important;
+          bottom: auto !important;
+          width: min(360px, 92vw) !important;
+          margin: 0 auto;
         }
       `}</style>
     </section>

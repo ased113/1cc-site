@@ -11,6 +11,7 @@ import Navbar from "./Navbar";
 import {
   Canvas,
   useFrame,
+  useThree,
 } from "@react-three/fiber";
 
 import {
@@ -27,6 +28,67 @@ import * as THREE from "three";
   Немного увеличиваем.
 */
 const LOGO_TARGET_SIZE = 4.8;
+
+/* =========================================================
+   CAMERA RIG
+
+   Perspective camera FOV is vertical. On a narrow portrait
+   phone, the resulting HORIZONTAL field of view is much
+   narrower than on a wide desktop screen at the same FOV —
+   so a horizontally-wide wordmark like "1CC" can get cropped
+   on the sides even though it fits fine on desktop. Instead
+   of papering over that with a flat CSS transform: scale()
+   (which doesn't actually change what the camera can see,
+   just shrinks the whole rendered image), pull the camera
+   back proportionally to how narrow the viewport is, so the
+   logo's real horizontal extent always fits inside frame.
+   Design/materials/lighting untouched — this only adjusts
+   camera distance.
+========================================================= */
+
+function CameraRig() {
+  const { camera, size } =
+    useThree();
+
+  useEffect(() => {
+    const aspect =
+      size.width / size.height;
+
+    const verticalFovRad =
+      THREE.MathUtils.degToRad(40);
+
+    /*
+      Desired half-width (in world units) that must fit
+      horizontally in frame, with a little breathing room.
+    */
+    const desiredHalfWidth =
+      (LOGO_TARGET_SIZE / 2) * 1.15;
+
+    const requiredZ =
+      desiredHalfWidth /
+      (
+        Math.tan(
+          verticalFovRad / 2
+        ) * aspect
+      );
+
+    /*
+      Never get closer than the original desktop distance —
+      only ever pull back further on narrow screens.
+    */
+    const z = Math.max(8, requiredZ);
+
+    if (
+      camera instanceof
+      THREE.PerspectiveCamera
+    ) {
+      camera.position.z = z;
+      camera.updateProjectionMatrix();
+    }
+  }, [size, camera]);
+
+  return null;
+}
 
 /* =========================================================
    3D LOGO
@@ -865,6 +927,7 @@ export default function Hero() {
               <Suspense
                 fallback={null}
               >
+                <CameraRig />
                 <Logo3D />
               </Suspense>
             </Canvas>
@@ -905,18 +968,8 @@ export default function Hero() {
           #hero {
             min-height: 480px;
           }
-
-          #hero .hero-logo {
-            transform: scale(0.72);
-          }
-        }
-
-        @media (max-width: 400px) {
-          #hero .hero-logo {
-            transform: scale(0.58);
-          }
         }
       `}</style>
     </>
   );
-}
+} 
