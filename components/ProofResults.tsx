@@ -20,12 +20,6 @@ const LIME_BRIGHT = "#d8ff00";
 const LIME_HOT = "#efffa0";
 
 const SECTION_PAD_X = 24;
-
-/*
-  The chart is intentionally rendered at approximately 30 FPS.
-  This keeps the organic motion while reducing the amount of
-  SVG/filter work performed by the browser during scrolling.
-*/
 const FRAME_INTERVAL = 1000 / 30;
 
 /* ============================================================
@@ -37,6 +31,13 @@ interface DayPoint {
   leads: number;
   approved: number;
   conversion: number;
+
+  /*
+   * Условный baseline "до 1CC".
+   * Замени на реальные показатели,
+   * когда они будут доступны.
+   */
+  beforeConversion: number;
 }
 
 const DATA: DayPoint[] = [
@@ -45,42 +46,49 @@ const DATA: DayPoint[] = [
     leads: 120,
     approved: 82,
     conversion: 68.3,
+    beforeConversion: 41.2,
   },
   {
     label: "WED",
     leads: 850,
     approved: 592,
     conversion: 69.6,
+    beforeConversion: 43.7,
   },
   {
     label: "THU",
     leads: 1750,
     approved: 1232,
     conversion: 70.4,
+    beforeConversion: 45.1,
   },
   {
     label: "FRI",
     leads: 2400,
     approved: 1716,
     conversion: 71.5,
+    beforeConversion: 46.3,
   },
   {
     label: "SAT",
     leads: 1050,
     approved: 744,
     conversion: 70.9,
+    beforeConversion: 44.8,
   },
   {
     label: "SUN",
     leads: 2050,
     approved: 1472,
     conversion: 71.8,
+    beforeConversion: 47.0,
   },
   {
     label: "MON",
     leads: 2418,
     approved: 1742,
     conversion: 72.1,
+    beforeConversion: 48.1,
   },
 ];
 
@@ -450,13 +458,6 @@ export default function ProofResults() {
       null
     );
 
-  /*
-    IMPORTANT:
-    "once: true" has intentionally been removed.
-
-    The chart animation now stops when the section leaves
-    the viewport and starts again when the section comes back.
-  */
   const isInView =
     useInView(
       sectionRef,
@@ -555,17 +556,41 @@ export default function ProofResults() {
     BASE_POINTS.length - 1;
 
   /* ==========================================================
-     OPTIMIZED ANIMATION LOOP
+     HOVER METRICS
+  ========================================================== */
+
+  const beforeConversion =
+    hovered?.beforeConversion ??
+    0;
+
+  const afterConversion =
+    hovered?.conversion ??
+    0;
+
+  const uplift =
+    afterConversion -
+    beforeConversion;
+
+  const beforeApproved =
+    hovered
+      ? Math.round(
+          hovered.leads *
+            (beforeConversion /
+              100)
+        )
+      : 0;
+
+  const approvedDelta =
+    hovered
+      ? hovered.approved -
+        beforeApproved
+      : 0;
+
+  /* ==========================================================
+     30 FPS ANIMATION LOOP
   ========================================================== */
 
   useEffect(() => {
-    /*
-      When the section isn't visible, do absolutely nothing.
-
-      This is one of the biggest performance improvements:
-      the graph no longer keeps animating in the background
-      while the user is looking at another page/section.
-    */
     if (!isInView) {
       return;
     }
@@ -579,13 +604,6 @@ export default function ProofResults() {
     let lastFrame =
       startTime;
 
-    /*
-      This is intentionally ~30 FPS.
-
-      requestAnimationFrame itself can fire around 60 times
-      per second, but we only perform the expensive SVG/path
-      calculations every ~33ms.
-    */
     function render(
       now: number
     ) {
@@ -597,13 +615,6 @@ export default function ProofResults() {
         now -
         lastFrame;
 
-      /*
-        Skip the expensive work on the extra RAF frames.
-
-        The browser can still synchronize the loop with the
-        display, but the heavy path/filter updates happen
-        only around 30 times per second.
-      */
       if (
         delta <
         FRAME_INTERVAL
@@ -622,18 +633,11 @@ export default function ProofResults() {
         now -
         startTime;
 
-      /*
-        Calculate the animated points once.
-      */
       const points =
         getCurrentPoints(
           elapsed
         );
 
-      /*
-        Build the two paths once and reuse them for all
-        corresponding SVG elements.
-      */
       const path =
         smoothPath(
           points
@@ -645,69 +649,41 @@ export default function ProofResults() {
         );
 
       /* ======================================================
-         UPDATE AREA
+         PATHS
       ====================================================== */
 
-      if (
-        areaRef.current
-      ) {
-        areaRef.current.setAttribute(
-          "d",
-          area
-        );
-      }
+      areaRef.current?.setAttribute(
+        "d",
+        area
+      );
+
+      deepShadowRef.current?.setAttribute(
+        "d",
+        path
+      );
+
+      mediumShadowRef.current?.setAttribute(
+        "d",
+        path
+      );
+
+      closeShadowRef.current?.setAttribute(
+        "d",
+        path
+      );
+
+      coreRef.current?.setAttribute(
+        "d",
+        path
+      );
+
+      hotRef.current?.setAttribute(
+        "d",
+        path
+      );
 
       /* ======================================================
-         UPDATE SHADOW PATHS
-      ====================================================== */
-
-      if (
-        deepShadowRef.current
-      ) {
-        deepShadowRef.current.setAttribute(
-          "d",
-          path
-        );
-      }
-
-      if (
-        mediumShadowRef.current
-      ) {
-        mediumShadowRef.current.setAttribute(
-          "d",
-          path
-        );
-      }
-
-      if (
-        closeShadowRef.current
-      ) {
-        closeShadowRef.current.setAttribute(
-          "d",
-          path
-        );
-      }
-
-      if (
-        coreRef.current
-      ) {
-        coreRef.current.setAttribute(
-          "d",
-          path
-        );
-      }
-
-      if (
-        hotRef.current
-      ) {
-        hotRef.current.setAttribute(
-          "d",
-          path
-        );
-      }
-
-      /* ======================================================
-         POINT PULSE
+         POINTS
       ====================================================== */
 
       const pulse =
@@ -717,10 +693,6 @@ export default function ProofResults() {
             0.0024
         ) *
           0.045;
-
-      /* ======================================================
-         UPDATE POINTS
-      ====================================================== */
 
       points.forEach(
         (
@@ -738,10 +710,6 @@ export default function ProofResults() {
           const hit =
             pointRefs
               .current[index];
-
-          /* -----------------------------------------------
-             GLOW
-          ------------------------------------------------ */
 
           if (glow) {
             glow.setAttribute(
@@ -763,19 +731,13 @@ export default function ProofResults() {
               String(
                 (
                   index ===
-                  points.length -
-                    1
+                  points.length - 1
                     ? 8.2
                     : 6.8
-                ) *
-                  pulse
+                ) * pulse
               )
             );
           }
-
-          /* -----------------------------------------------
-             CORE
-          ------------------------------------------------ */
 
           if (core) {
             core.setAttribute(
@@ -792,10 +754,6 @@ export default function ProofResults() {
               )
             );
           }
-
-          /* -----------------------------------------------
-             HIT AREA
-          ------------------------------------------------ */
 
           if (hit) {
             hit.setAttribute(
@@ -821,19 +779,11 @@ export default function ProofResults() {
         );
     }
 
-    /*
-      Start the animation.
-    */
     rafId =
       requestAnimationFrame(
         render
       );
 
-    /*
-      Cleanup is important:
-      whenever isInView becomes false, this effect is destroyed
-      and the animation loop is cancelled immediately.
-    */
     return () => {
       stopped = true;
 
@@ -852,7 +802,6 @@ export default function ProofResults() {
   return (
     <section
       ref={sectionRef}
-      className="proof-section"
       style={{
         position:
           "relative",
@@ -889,10 +838,6 @@ export default function ProofResults() {
             "center",
         }}
       >
-        {/* ==================================================
-            PROOF / RESULTS
-        ================================================== */}
-
         <motion.div
           initial={{
             opacity: 0,
@@ -952,10 +897,6 @@ export default function ProofResults() {
             Proof / Results
           </span>
         </motion.div>
-
-        {/* ==================================================
-            HEADLINE
-        ================================================== */}
 
         <motion.h2
           initial={{
@@ -1025,10 +966,6 @@ export default function ProofResults() {
           </span>
         </motion.h2>
 
-        {/* ==================================================
-            SUBTEXT
-        ================================================== */}
-
         <motion.p
           initial={{
             opacity: 0,
@@ -1083,9 +1020,7 @@ export default function ProofResults() {
           CHART
       ====================================================== */}
 
-      <div
-        className="pr-chart-outer"
-      >
+      <div className="pr-chart-outer">
         <motion.div
           initial={{
             opacity: 0,
@@ -1139,9 +1074,7 @@ export default function ProofResults() {
             }}
           >
             <defs>
-              {/* ==================================================
-                  AREA GRADIENT
-              ================================================== */}
+              {/* AREA */}
 
               <linearGradient
                 id="chartGradient"
@@ -1186,10 +1119,7 @@ export default function ProofResults() {
                 />
               </linearGradient>
 
-              {/* ==================================================
-                  POINT GLOW
-                  KEPT EXACTLY AS BEFORE
-              ================================================== */}
+              {/* POINT GLOW */}
 
               <filter
                 id="pointGlow"
@@ -1215,9 +1145,7 @@ export default function ProofResults() {
               </filter>
             </defs>
 
-            {/* ==================================================
-                GRID
-            ================================================== */}
+            {/* GRID */}
 
             {Y_TICKS.map(
               (value) => (
@@ -1243,13 +1171,7 @@ export default function ProofResults() {
               )
             )}
 
-            {/* ==================================================
-                Y LABELS
-                Wrapped in a group so it can be hidden on mobile —
-                at narrow viewport widths the SVG scales down
-                enough that fontSize 14 (in a 1900-unit viewBox)
-                would render as a couple of illegible pixels.
-            ================================================== */}
+            {/* Y LABELS */}
 
             <g className="pr-y-axis">
               {Y_TICKS.map(
@@ -1276,9 +1198,7 @@ export default function ProofResults() {
               )}
             </g>
 
-            {/* ==================================================
-                AREA
-            ================================================== */}
+            {/* AREA */}
 
             <path
               ref={
@@ -1295,12 +1215,7 @@ export default function ProofResults() {
               }
             />
 
-            {/* ==================================================
-                DEEP SHADOW
-
-                BLUR INTENTIONALLY PRESERVED:
-                48px
-            ================================================== */}
+            {/* DEEP SHADOW */}
 
             <path
               ref={
@@ -1335,12 +1250,7 @@ export default function ProofResults() {
               }}
             />
 
-            {/* ==================================================
-                MEDIUM SHADOW
-
-                BLUR INTENTIONALLY PRESERVED:
-                30px
-            ================================================== */}
+            {/* MEDIUM SHADOW */}
 
             <path
               ref={
@@ -1375,12 +1285,7 @@ export default function ProofResults() {
               }}
             />
 
-            {/* ==================================================
-                CLOSE SHADOW
-
-                BLUR INTENTIONALLY PRESERVED:
-                13px
-            ================================================== */}
+            {/* CLOSE SHADOW */}
 
             <path
               ref={
@@ -1415,9 +1320,7 @@ export default function ProofResults() {
               }}
             />
 
-            {/* ==================================================
-                CORE
-            ================================================== */}
+            {/* CORE */}
 
             <path
               ref={
@@ -1442,9 +1345,7 @@ export default function ProofResults() {
               }
             />
 
-            {/* ==================================================
-                HOT CORE
-            ================================================== */}
+            {/* HOT CORE */}
 
             <path
               ref={
@@ -1468,9 +1369,7 @@ export default function ProofResults() {
               }
             />
 
-            {/* ==================================================
-                POINTS
-            ================================================== */}
+            {/* POINTS */}
 
             {BASE_POINTS.map(
               (
@@ -1512,8 +1411,6 @@ export default function ProofResults() {
                       )
                     }
                   >
-                    {/* HIT AREA */}
-
                     <circle
                       ref={(
                         element
@@ -1532,8 +1429,6 @@ export default function ProofResults() {
                       r={22}
                       fill="transparent"
                     />
-
-                    {/* GLOW */}
 
                     <circle
                       ref={(
@@ -1569,8 +1464,6 @@ export default function ProofResults() {
                       }
                       filter="url(#pointGlow)"
                     />
-
-                    {/* DARK CENTER */}
 
                     <circle
                       ref={(
@@ -1612,11 +1505,35 @@ export default function ProofResults() {
           </svg>
 
           {/* ====================================================
-              TOOLTIP
+              COMPACT PREMIUM TOOLTIP
           ==================================================== */}
 
           {hovered && (
-            <div
+            <motion.div
+              key={
+                hovered.label
+              }
+              initial={{
+                opacity: 0,
+                y: 7,
+                scale: 0.975,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              transition={{
+                duration:
+                  0.2,
+
+                ease: [
+                  0.16,
+                  1,
+                  0.3,
+                  1,
+                ],
+              }}
               style={{
                 position:
                   "absolute",
@@ -1635,160 +1552,593 @@ export default function ProofResults() {
 
                 transform:
                   isLastHovered
-                    ? "translate(-100%, -122%)"
+                    ? "translate(-100%, calc(-100% - 22px))"
                     : isFirstHovered
-                    ? "translate(0%, -122%)"
-                    : "translate(-50%, -128%)",
+                    ? "translate(0%, calc(-100% - 22px))"
+                    : "translate(-50%, calc(-100% - 22px))",
 
-                background:
-                  "#0a0c08",
-
-                border:
-                  "1px solid rgba(163,230,53,0.3)",
-
-                borderRadius:
-                  10,
+                width:
+                  258,
 
                 padding:
-                  "10px 13px",
+                  "13px 14px 12px",
 
-                whiteSpace:
-                  "nowrap",
+                background:
+                  "radial-gradient(circle at 88% 8%, rgba(185,255,70,0.045), transparent 35%), linear-gradient(145deg, rgba(15,18,14,0.975), rgba(5,7,6,0.985))",
+
+                border:
+                  "1px solid rgba(200,255,0,0.14)",
+
+                borderRadius:
+                  12,
+
+                boxShadow:
+                  "0 22px 58px rgba(0,0,0,0.76), 0 0 26px rgba(150,205,30,0.055), inset 0 1px 0 rgba(255,255,255,0.055)",
+
+                backdropFilter:
+                  "blur(16px)",
+
+                WebkitBackdropFilter:
+                  "blur(16px)",
 
                 pointerEvents:
                   "none",
 
-                boxShadow:
-                  "0 14px 34px rgba(0,0,0,0.6), 0 0 22px rgba(120,170,0,0.13)",
-
                 zIndex:
-                  10,
+                  20,
 
                 textAlign:
                   "left",
+
+                color:
+                  "#fff",
               }}
             >
+              {/* TOP MICRO HEADER */}
+
               <div
                 style={{
                   display:
                     "flex",
 
-                  flexDirection:
-                    "column",
+                  alignItems:
+                    "center",
 
-                  gap: 5,
+                  justifyContent:
+                    "space-between",
+
+                  marginBottom:
+                    12,
                 }}
               >
-                {/* LEADS */}
+                <div
+                  style={{
+                    display:
+                      "flex",
 
-                <div>
-                  <div
+                    alignItems:
+                      "center",
+
+                    gap:
+                      7,
+                  }}
+                >
+                  <span
                     style={{
-                      fontSize:
-                        14,
+                      width:
+                        5,
 
-                      fontWeight:
-                        700,
+                      height:
+                        5,
 
-                      color:
-                        "#fff",
+                      borderRadius:
+                        "50%",
 
-                      lineHeight:
-                        1.2,
+                      background:
+                        "rgba(200,255,0,0.78)",
+
+                      boxShadow:
+                        "0 0 9px rgba(200,255,0,0.3)",
                     }}
-                  >
-                    {hovered.leads.toLocaleString(
-                      "en-US"
-                    )}
-                  </div>
+                  />
 
-                  <div
+                  <span
                     style={{
-                      fontSize:
-                        10,
+                      fontFamily:
+                        "'Courier New', monospace",
 
-                      color:
-                        "rgba(255,255,255,0.45)",
-                    }}
-                  >
-                    leads
-                  </div>
-                </div>
-
-                {/* APPROVED */}
-
-                <div>
-                  <div
-                    style={{
-                      fontSize:
-                        14,
-
-                      fontWeight:
-                        700,
-
-                      color:
-                        "#fff",
-
-                      lineHeight:
-                        1.2,
-                    }}
-                  >
-                    {hovered.approved.toLocaleString(
-                      "en-US"
-                    )}
-                  </div>
-
-                  <div
-                    style={{
                       fontSize:
                         10,
 
+                      letterSpacing:
+                        "0.16em",
+
                       color:
-                        "rgba(255,255,255,0.45)",
+                        "rgba(255,255,255,0.42)",
+
+                      textTransform:
+                        "uppercase",
                     }}
                   >
-                    approved
-                  </div>
+                    {hovered.label}
+                  </span>
                 </div>
 
-                {/* CONVERSION */}
+                <span
+                  style={{
+                    fontFamily:
+                      "'Courier New', monospace",
+
+                    fontSize:
+                      10,
+
+                    color:
+                      "#dfff8a",
+
+                    letterSpacing:
+                      "0.02em",
+                  }}
+                >
+                  ↑ +
+                  {uplift.toFixed(
+                    1
+                  )}
+                  pp
+                </span>
+              </div>
+
+              {/* COMPARISON */}
+
+              <div
+                style={{
+                  display:
+                    "grid",
+
+                  gridTemplateColumns:
+                    "1fr 28px 1fr",
+
+                  alignItems:
+                    "center",
+
+                  gap:
+                    7,
+
+                  padding:
+                    "10px 0 11px",
+
+                  borderTop:
+                    "1px solid rgba(255,255,255,0.055)",
+
+                  borderBottom:
+                    "1px solid rgba(255,255,255,0.055)",
+                }}
+              >
+                {/* BEFORE */}
 
                 <div>
                   <div
                     style={{
+                      fontFamily:
+                        "'Courier New', monospace",
+
                       fontSize:
-                        14,
+                        8,
+
+                      letterSpacing:
+                        "0.11em",
+
+                      color:
+                        "rgba(255,255,255,0.30)",
+
+                      textTransform:
+                        "uppercase",
+
+                      marginBottom:
+                        5,
+                    }}
+                  >
+                    ДО 1CC
+                  </div>
+
+                  <div
+                    style={{
+                      fontFamily:
+                        "var(--font-jakarta), Inter, sans-serif",
+
+                      fontSize:
+                        26,
+
+                      lineHeight:
+                        1,
 
                       fontWeight:
                         700,
 
-                      color:
-                        "#fff",
+                      letterSpacing:
+                        "-0.04em",
 
-                      lineHeight:
-                        1.2,
+                      color:
+                        "rgba(255,255,255,0.54)",
                     }}
                   >
-                    {
-                      hovered.conversion
-                    }
+                    {beforeConversion.toFixed(
+                      1
+                    )}
                     %
                   </div>
 
                   <div
                     style={{
+                      marginTop:
+                        4,
+
                       fontSize:
-                        10,
+                        9,
 
                       color:
-                        "rgba(255,255,255,0.45)",
+                        "rgba(255,255,255,0.25)",
+                    }}
+                  >
+                    conversion
+                  </div>
+                </div>
+
+                {/* ARROW */}
+
+                <div
+                  style={{
+                    display:
+                      "flex",
+
+                    justifyContent:
+                      "center",
+
+                    alignItems:
+                      "center",
+
+                    color:
+                      "rgba(255,255,255,0.19)",
+
+                    fontSize:
+                      16,
+                  }}
+                >
+                  →
+                </div>
+
+                {/* AFTER */}
+
+                <div
+                  style={{
+                    textAlign:
+                      "right",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily:
+                        "'Courier New', monospace",
+
+                      fontSize:
+                        8,
+
+                      letterSpacing:
+                        "0.11em",
+
+                      color:
+                        "rgba(220,245,175,0.54)",
+
+                      textTransform:
+                        "uppercase",
+
+                      marginBottom:
+                        5,
+                    }}
+                  >
+                    З 1CC
+                  </div>
+
+                  <div
+                    style={{
+                      fontFamily:
+                        "var(--font-jakarta), Inter, sans-serif",
+
+                      fontSize:
+                        26,
+
+                      lineHeight:
+                        1,
+
+                      fontWeight:
+                        800,
+
+                      letterSpacing:
+                        "-0.04em",
+
+                      color:
+                        "#fff",
+
+                      textShadow:
+                        "0 0 18px rgba(200,255,0,0.09)",
+                    }}
+                  >
+                    {afterConversion.toFixed(
+                      1
+                    )}
+                    %
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop:
+                        4,
+
+                      fontSize:
+                        9,
+
+                      color:
+                        "rgba(210,240,160,0.48)",
                     }}
                   >
                     conversion
                   </div>
                 </div>
               </div>
-            </div>
+
+              {/* LEADS / APPROVED */}
+
+              <div
+                style={{
+                  display:
+                    "flex",
+
+                  alignItems:
+                    "center",
+
+                  justifyContent:
+                    "space-between",
+
+                  padding:
+                    "10px 0 8px",
+
+                  borderBottom:
+                    "1px solid rgba(255,255,255,0.045)",
+                }}
+              >
+                <div
+                  style={{
+                    display:
+                      "flex",
+
+                    alignItems:
+                      "baseline",
+
+                    gap:
+                      7,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily:
+                        "'Courier New', monospace",
+
+                      fontSize:
+                        8,
+
+                      letterSpacing:
+                        "0.11em",
+
+                      color:
+                        "rgba(255,255,255,0.28)",
+
+                      textTransform:
+                        "uppercase",
+                    }}
+                  >
+                    leads
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize:
+                        13,
+
+                      fontWeight:
+                        700,
+
+                      color:
+                        "rgba(255,255,255,0.82)",
+                    }}
+                  >
+                    {(
+                      hovered.leads /
+                      1000
+                    ).toFixed(
+                      hovered.leads >=
+                        1000
+                        ? 1
+                        : 0
+                    )}
+                    K
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display:
+                      "flex",
+
+                    alignItems:
+                      "baseline",
+
+                    gap:
+                      7,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily:
+                        "'Courier New', monospace",
+
+                      fontSize:
+                        8,
+
+                      letterSpacing:
+                        "0.11em",
+
+                      color:
+                        "rgba(210,240,160,0.34)",
+
+                      textTransform:
+                        "uppercase",
+                    }}
+                  >
+                    approved
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize:
+                        13,
+
+                      fontWeight:
+                        700,
+
+                      color:
+                        "#dfff8a",
+                    }}
+                  >
+                    {(
+                      hovered.approved /
+                      1000
+                    ).toFixed(
+                      hovered.approved >=
+                        1000
+                        ? 1
+                        : 0
+                    )}
+                    K
+                  </span>
+                </div>
+              </div>
+
+              {/* APPROVED DELTA */}
+
+              <div
+                style={{
+                  display:
+                    "flex",
+
+                  justifyContent:
+                    "space-between",
+
+                  alignItems:
+                    "center",
+
+                  paddingTop:
+                    9,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize:
+                      9,
+
+                    color:
+                      "rgba(255,255,255,0.26)",
+                  }}
+                >
+                  Approved
+                </span>
+
+                <div
+                  style={{
+                    display:
+                      "flex",
+
+                    alignItems:
+                      "center",
+
+                    gap:
+                      7,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize:
+                        10,
+
+                      color:
+                        "rgba(255,255,255,0.34)",
+                    }}
+                  >
+                    {beforeApproved.toLocaleString(
+                      "en-US"
+                    )}
+                    {" → "}
+                    {hovered.approved.toLocaleString(
+                      "en-US"
+                    )}
+                  </span>
+
+                  <span
+                    style={{
+                      fontSize:
+                        10,
+
+                      fontWeight:
+                        700,
+
+                      color:
+                        "rgba(200,255,0,0.72)",
+                    }}
+                  >
+                    +
+                    {approvedDelta.toLocaleString(
+                      "en-US"
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* CONNECTOR */}
+
+              <div
+                style={{
+                  position:
+                    "absolute",
+
+                  left:
+                    isLastHovered
+                      ? "auto"
+                      : isFirstHovered
+                      ? 24
+                      : "50%",
+
+                  right:
+                    isLastHovered
+                      ? 24
+                      : "auto",
+
+                  bottom:
+                    -16,
+
+                  width:
+                    1,
+
+                  height:
+                    16,
+
+                  background:
+                    "linear-gradient(to bottom, rgba(200,255,0,0.30), rgba(200,255,0,0))",
+
+                  transform:
+                    isLastHovered
+                      ? "none"
+                      : "translateX(-50%)",
+                }}
+              />
+            </motion.div>
           )}
         </motion.div>
       </div>
@@ -1872,16 +2222,10 @@ export default function ProofResults() {
 
       {/* ======================================================
           CSS
-          Plain <style> tag (not <style jsx>) — matches the fix
-          already applied elsewhere in the project after
-          styled-jsx's head-injection turned out unreliable in
-          this dev environment. Mobile: hide the Y-axis labels
-          (they'd shrink to illegible pixels) and trim the
-          vertical padding/margins.
       ====================================================== */}
 
-      <style>{`
-        .proof-section .pr-chart-outer {
+      <style jsx>{`
+        .pr-chart-outer {
           width: calc(
             100% +
               ${SECTION_PAD_X * 2}px
@@ -1898,40 +2242,29 @@ export default function ProofResults() {
           overflow:
             visible;
 
-          /*
-            Helps the browser isolate the chart area as a
-            separate rendering region without changing the
-            actual visual design.
-          */
           contain:
             layout
             style;
         }
 
-        .proof-section .pr-chart-outer svg {
+        .pr-chart-outer svg {
           overflow:
             visible;
 
-          /*
-            Keep the SVG itself isolated from unrelated
-            page rendering where possible.
-          */
           contain:
             layout
             style;
         }
 
         @media (max-width: 700px) {
-          .proof-section {
-            padding: 110px 20px 90px !important;
+          .pr-chart-outer {
+            margin-top:
+              56px;
           }
 
-          .proof-section .pr-chart-outer {
-            margin-top: 56px;
-          }
-
-          .proof-section .pr-y-axis {
-            display: none;
+          .pr-y-axis {
+            display:
+              none;
           }
         }
 

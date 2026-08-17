@@ -34,46 +34,95 @@ function WordSwapper() {
           (prev + 1) %
           DYNAMIC_WORDS.length
       );
-    }, 2500);
+    }, 3200);
 
     return () => {
       clearInterval(interval);
     };
   }, []);
 
+  const currentWord =
+    DYNAMIC_WORDS[index];
+
   return (
-    <span className="word-swap-wrap">
-      <AnimatePresence mode="wait">
+    <span
+      className="word-swap-wrap"
+      aria-live="polite"
+    >
+      <AnimatePresence
+        mode="wait"
+      >
         <motion.span
-          key={
-            DYNAMIC_WORDS[index]
-          }
+          key={currentWord}
           className="word-swap-item"
-          initial={{
-            opacity: 0,
-            y: 12,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            y: -12,
-          }}
-          transition={{
-            duration: 0.4,
-            ease: [
-              0.16,
-              1,
-              0.3,
-              1,
-            ],
-          }}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
         >
-          {
-            DYNAMIC_WORDS[index]
-          }
+          {currentWord
+            .split("")
+            .map((char, i) => (
+              <motion.span
+                key={`${currentWord}-${i}`}
+                className="word-swap-char"
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    x: -18,
+                    filter:
+                      "blur(4px)",
+                  },
+
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    filter:
+                      "blur(0px)",
+                    transition: {
+                      duration:
+                        0.32,
+                      delay:
+                        i * 0.035,
+                      ease: [
+                        0.16,
+                        1,
+                        0.3,
+                        1,
+                      ],
+                    },
+                  },
+
+                  exit: {
+                    opacity: 0,
+                    x: 12,
+                    filter:
+                      "blur(3px)",
+                    transition: {
+                      duration:
+                        0.16,
+                      delay:
+                        i * 0.012,
+                      ease: [
+                        0.4,
+                        0,
+                        1,
+                        1,
+                      ],
+                    },
+                  },
+                }}
+                style={{
+                  display:
+                    char === " "
+                      ? "inline"
+                      : "inline-block",
+                }}
+              >
+                {char === " "
+                  ? "\u00A0"
+                  : char}
+              </motion.span>
+            ))}
         </motion.span>
       </AnimatePresence>
     </span>
@@ -926,14 +975,33 @@ export default function About() {
 
           vertical-align:
             top;
+
+          white-space:
+            nowrap;
         }
 
         :global(.word-swap-item) {
           display:
             inline-block;
 
+          white-space:
+            nowrap;
+
           color:
             #ffffff;
+        }
+
+        :global(.word-swap-char) {
+          display:
+            inline-block;
+
+          white-space:
+            pre;
+
+          will-change:
+            transform,
+            opacity,
+            filter;
         }
 
         /* ===================================================
